@@ -18,8 +18,12 @@ let createDOMElement = function(tagName, attributes, ...textContent) {
 };
 
 let body = document.body;
-let h1 = createDOMElement('div', {class: 'header'}, 'Привет мир!');
+let h1 = createDOMElement('div', {class: 'header'}, 'Hello world!');
 body.appendChild(h1);
+
+// Task: to create an object in two ways
+
+// First way
 
 let person = {
   surname: 'Smith',
@@ -33,6 +37,8 @@ let person = {
   },
 };
 
+// Second way
+
 let person2 = {};
 person2.surname = 'Brown';
 person2.name = 'June';
@@ -44,4 +50,3 @@ person2.telephone.codeRegion = '457';
 person2.telephone.number = '785-85-85';
 
 console.log(person, person2);
-
