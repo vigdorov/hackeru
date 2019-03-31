@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lesson 02</title>
+
+</head>
+<body>
+
+<script>
+    // есть входные данные, необходимо взять строку и посчитать в ней
+    // количество слов, в качестве разделителей: ; , \s
+    let str = '; s ,4;Это строка,,,, в которой надо посчитать слова; но не символы,,, ;';
+
+    // первая реализация
+    let array = [];
+    let slovo = '';
+    for(let i = 0; i < str.length; i++) {
+      if (str[i] === ' ' || str[i] === ',' || str[i] === ';') {
+        if (slovo) {
+          array.push(slovo);
+          slovo = '';
+        }
+      } else {
+        slovo += str[i];
+      }
+      if (i === str.length - 1 && slovo) {
+        array.push(slovo);
+      }
+    }
+
+    console.log( 'Бьем на массив и считаем длину: ', array.length );
+
+
+    // вторая реализация
+    let newAr = str.split(/[\s;,]/);
+    let count = 0;
+    newAr.forEach( (el) => {
+      if (el) count++
+    } );
+    console.log('Split через регулярку: ', count);
+
+    // третья реализация
+    let count2 = 0;
+    let strIn = '';
+    for (let i = 0; i < str.length; i++) {
+      let x = str[i];
+      if (x === ' ' || x === ';' || x === ',') {
+        if (strIn) {
+          count2++;
+          strIn = '';
+        }
+      } else {
+        strIn += x;
+      }
+      if (i === str.length - 1 && strIn) count2++;
+    }
+    console.log( 'Считаем символы в цикле: ', count2 );
+
+    // четвертая реализация
+
+    let x = str.split(',').join(' ').split(';').join(' ').split(' ');
+    let ccc = 0;
+    for(let i = 0; i < x.length; i++) {
+      if(x[i] === '') continue;
+      ccc++;
+    }
+    console.log('Split без регулярок', ccc);
+
+    // пятая реализация
+    let marker = false;
+    let count3 = 0;
+    for (let i = 0; i < str.length; i++) {
+      if (str[i] === ' ' || str[i] === ',' || str[i] === ';') {
+        if (marker) {
+          count3++;
+          marker = false;
+          continue;git
+        }
+      } else {
+        marker = true;
+      }
+      if (marker && i === str.length - 1) {
+        count3++;
+      }
+    }
+    console.log('Через маркер true (меньше памяти): ', count3);
+
+    // Задача 2: Найти в массиве те элементы, значение
+    // которых меньше среднего арифметического от всех элементов массива.
+</script>
+</body>
+</html>
