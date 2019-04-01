@@ -79,9 +79,9 @@
 
     // First realization
 
-    let averageArithmetic = inputArray.reduce( function(previous, current) {
+    let averageArithmetic = Math.round(inputArray.reduce( function(previous, current) {
       return previous += current;
-    }) / inputArray.length;
+    }) / inputArray.length);
 
     let filteredArray = inputArray.filter( function(element) {
       return element < averageArithmetic;
@@ -98,7 +98,7 @@
     for (let i = 0; i < inputArray.length; i++) {
       averageArithmetic += inputArray[i];
     }
-    averageArithmetic /= inputArray.length;
+    averageArithmetic = Math.round(averageArithmetic / inputArray.length);
 
     for (let i = 0; i < inputArray.length; i++) {
       if (inputArray[i] < averageArithmetic) {
