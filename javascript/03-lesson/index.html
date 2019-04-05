@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lesson 03 (05.04.19)</title>
+</head>
+<body>
+<script>
+    // Task: Create a function constructor, which is returns an object with
+    //       three methods. Methods must accept as a parameter the three
+    //       variables or object
+
+    let Person = function(name, age) {
+      this.name  = name;
+      this.age   = age;
+      this.phone = {
+        code:   null,
+        region: null,
+        number: null,
+      };
+      this.address = {
+        city:   null,
+        street: null,
+        house:  null,
+      };
+      this.hobby = [];
+
+      this.setPhone = function() {
+        if (typeof arguments[0] === 'object') {
+          this.phone.code   = arguments[0].code;
+          this.phone.region = arguments[0].region;
+          this.phone.number = arguments[0].number;
+        } else {
+          this.phone.code   = arguments[0];
+          this.phone.region = arguments[1];
+          this.phone.number = arguments[2];
+        }
+      };
+
+      this.setAddress = function() {
+        if (typeof arguments[0] === 'object') {
+          this.address.city    = arguments[0].city;
+          this.address.street  = arguments[0].street;
+          this.address.house   = arguments[0].house;
+        } else {
+          this.address.city   = arguments[0];
+          this.address.street = arguments[1];
+          this.address.house  = arguments[2];
+        }
+      };
+      this.printUser = function() {
+        console.log('The user', this.name, 'age of', this.age, '.');
+        console.log('Phone number:', this.phone.code,
+                     this.phone.region, this.phone.number);
+        console.log('Address:', this.address.city,
+                     this.address.street, this.address.house);
+      };
+    };
+
+    // Three parameters
+    let user1 = new Person('John', 56);
+    user1.setPhone('+7', '456', '456-45-45');
+    user1.setAddress('Moscow', 'Sadovaya', '56');
+    user1.printUser();
+
+    // Object
+    let user2 = new Person('Sara', 44);
+    user2.setPhone( {code: '+3', region: '343', number: '333-45-45'} );
+    user2.setAddress( {city: 'Piter', street: 'Aleya', house: '56'} );
+    user2.printUser();
+</script>
+</body>
+</html>
