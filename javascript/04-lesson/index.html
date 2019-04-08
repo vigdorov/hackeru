@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lesson 04 (07.04.19)</title>
+</head>
+<body>
+<script src="echoModule.js"></script>
+<script src="createDOMElement.js"></script>
+<script>
+
+    // Task: Create a recursive function to fold numbers/.
+    // First realization.
+    let sum = function(a) {
+      return function(b) {
+        return function(c) {
+          return a + b + c;
+        }
+      }
+    };
+
+    console.log( 'Function sum:', sum(1)(2)(3) );
+
+    // Second realization. Infinity number of calls
+    let sum2 = function(a) {
+      let currentSum = a;
+
+      let f = function(b) {
+        currentSum += b;
+        return f;
+      };
+      f.toString = function() {
+        return currentSum;
+      };
+
+      return f;
+    };
+
+    console.log( 'Function sum2:', sum2(1)(2)(3)(4)(5) );
+
+    // Task: Create recursive function to generate a multidimensional
+    //       array in one-dimensional.
+    let arrayToSinglePass = function(inputArray) {
+      let resultArray = [];
+
+      let generate = function(inputArray) {
+        for (let i = 0; i < inputArray.length; i++) {
+          if (typeof inputArray[i] === 'object') {
+            generate(inputArray[i]);
+          } else {
+            resultArray.push(inputArray[i]);
+          }
+        }
+      };
+      generate(inputArray);
+
+      return resultArray;
+    };
+
+    let inputArray = [1, 2, 4, [4, 5], 1, [3, [3, 4], 5], 7];
+    console.log( 'Array:', arrayToSinglePass(inputArray) );
+
+    // Task: Create recursive function to calculation factorial with
+    //       checking the time of the algorithm
+    let factorial = function(n, startTime) {
+      if (new Date() - startTime > 0.5) {
+        throw Error('Operation time exceeded');
+      }
+      if (n <= 1) return 1;
+      return n * factorial(n - 1, startTime);
+    };
+
+    try {
+      console.log( factorial(10000, new Date()) );
+    } catch (e){
+      console.log (e);
+    }
+
+    // The study method Object.defineProperty().
+    let city = {};
+    city.name = 'Moscow';
+
+    Object.defineProperty(city, '_age', {
+      value: null,
+      configurable: true,
+    });
+
+    Object.defineProperty(city, 'age', {
+      enumerable: true,
+      set: function(n) {
+        Object.defineProperty(city, '_age', {
+          value: n,
+        });
+      },
+      get: function(n) {
+        return this._age;
+      }
+    });
+
+    city.age = 800;
+
+    for (let key in city) {
+      console.log('key:', key, 'value:', city[key]);
+    }
+
+    // Create a regular property with Object.defineProperty()
+
+    Object.defineProperty(city, 'country', {
+      value: 'Russia',
+      configurable: true,
+      enumerable: true,
+      writable: true,
+    });
+
+    echo(city);
+</script>
+<script src="selfStudy.js"></script>
+</body>
+</html>
