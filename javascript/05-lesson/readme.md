@@ -1,4 +1,5 @@
 ## Задача: Разработка записной книжки.
+Demo: [Демо-версия](http://xn--h1alacdcpb.xn----7sbbhpa4ayed4a.xn--p1ai/notepad/)
 ### version 1.0.0:
 - Хранит данные в LocalStorage
 - Добавляет, редактирует и удаляет записи
