@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+<div class="container-fluid">
+    <h1>Менеджер задач</h1>
+    <div class="row">
+        <div class="col-6 card">
+            <div class="card-body">
+                <div class="form-group" id="form-task-name">
+                    <label for="task-name">Название события: <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="task-name" placeholder="Добавьте название">
+                    <small></small>
+                </div>
+                <div class="form-group">
+                    <label for="task-desc">Описание:</label>
+                    <textarea rows="3" class="form-control" id="task-desc" placeholder="Добавьте описание"></textarea>
+                    <small></small>
+                </div>
+                <div class="form-group" id="form-task-date">
+                    <label for="task-date">Дата события: <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="task-date">
+                    <small></small>
+                </div>
+                <div class="custom-control custom-switch form-group">
+                    <input class="custom-control-input" type="checkbox" value="" id="task-check">
+                    <label class="custom-control-label" for="task-check">
+                        <i class="fas fa-star" style="color: #f5d000;"></i>
+                        Важное событие
+                    </label>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary btn-block" id="add">Добавить</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-secondary btn-block" id="clear">Очистить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 card">
+            <div class="card-body">
+                <h5>Список задач:</h5>
+                <ul class="list-group" id="tasks"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="classWork.js"></script>
+</body>
+</html>
