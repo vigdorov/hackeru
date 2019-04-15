@@ -1,0 +1,28 @@
+.far.fa-star:hover {
+    color: #f5d000;
+}
+
+.fas.fa-star {
+    color: #f5d000;
+}
+
+li .fas.fa-star:hover {
+    text-shadow: 0px 0px 2px black;
+    color: #f5d000;
+}
+
+.form-task-date {
+    position: relative;
+}
+
+.date-popup {
+    display: none;
+    position: absolute;
+    width: 350px;
+    height: 280px;
+    top: -251px;
+    left: 2px;
+}
+
+
+

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container-fluid">
@@ -19,33 +19,67 @@
     <div class="row">
         <div class="col-6 card">
             <div class="card-body">
+
                 <div class="form-group" id="form-task-name">
                     <label for="task-name">Название события: <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="task-name" placeholder="Добавьте название">
                     <small></small>
                 </div>
+
                 <div class="form-group">
                     <label for="task-desc">Описание:</label>
                     <textarea rows="3" class="form-control" id="task-desc" placeholder="Добавьте описание"></textarea>
                     <small></small>
                 </div>
-                <div class="form-group" id="form-task-date">
-                    <label for="task-date">Дата события: <span class="text-danger">*</span></label>
+
+                <div class="form-group form-task-date" id="form-task-date">
+                    <div class="card date-popup" id="date-popup">
+                        <div class="card-body">
+                            <div class="row justify-content-between">
+                                <div class="col text-left">
+                                    <span class="badge badge-primary" id="month">Август</span>
+                                    <span class="badge badge-primary" id="year">1980</span>
+                                </div>
+                                <div class="col text-right">
+                                    <div class="btn-group mr-2" role="group" aria-label="First group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" id="left-month">
+                                            <i class="fas fa-caret-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-sm" id="curr-day">
+                                            <i class="far fa-calendar-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" id="right-month">
+                                            <i class="fas fa-caret-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <table class="table date-table table-borderless table-sm" id="table"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="task-date" id="date-header">Дата события: <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="task-date">
-                    <small></small>
+                    <small id="msg-date"></small>
                 </div>
+
                 <div class="custom-control custom-switch form-group">
                     <input class="custom-control-input" type="checkbox" value="" id="task-check">
                     <label class="custom-control-label" for="task-check">
-                        <i class="fas fa-star" style="color: #f5d000;"></i>
+                        <i class="fas fa-star"></i>
                         Важное событие
                     </label>
                 </div>
+
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <button type="button" class="btn btn-primary btn-block" id="add">Добавить</button>
                         </div>
+
                         <div class="col-6">
                             <button type="button" class="btn btn-outline-secondary btn-block" id="clear">Очистить</button>
                         </div>
@@ -53,13 +87,49 @@
                 </div>
             </div>
         </div>
+
         <div class="col-6 card">
             <div class="card-body">
                 <h5>Список задач:</h5>
+                <div class="form-group form-inline">
+                    <select id="select-task" class="col-sm-5 form-control form-control-sm">
+                        <option value="0" selected>Все задачи</option>
+                        <option value="1">Выполнить сегодня</option>
+                        <option value="2">Просрочены</option>
+                    </select>
+                    <div class="col"></div>
+                    <button class="col-sm-3 btn btn-primary btn-sm" id="period-task">
+                        По сроку
+                        <i class="fas fa-angle-down"></i>
+                    </button>
+                </div>
+
                 <ul class="list-group" id="tasks"></ul>
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Удалить задачу?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Вы действительно хотите удалить задачу? Данные будут безвозвратно утеряны.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="modal-del">Удалить задачу</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <script src="classWork.js"></script>
 </body>
