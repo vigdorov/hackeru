@@ -211,7 +211,7 @@ let createTask = function(index) {
     setForm(index);
     li.classList.add('active');
     let date = parseDate(state.taskList[index].date);
-    state.calendarDate = new Date(date[2], date[1], date[0]);
+    state.calendarDate = new Date(date[2], date[1] - 1, date[0]);
   });
   pen.addEventListener('mouseover', function() {
     pen.classList.add('text-warning');
@@ -529,4 +529,3 @@ taskDate.addEventListener('click', function() {
     }
   })
 });
-
