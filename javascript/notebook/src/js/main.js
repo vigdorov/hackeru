@@ -1,6 +1,6 @@
 import 'bootstrap';
 import '../css/main.scss'
 import './modules/createDOMElement';
-import './taskManager';
+const TaskManager = require('./TaskManager');
 
-let taskApp = taskManager(document.body);
+let taskApp = new TaskManager(document.body);

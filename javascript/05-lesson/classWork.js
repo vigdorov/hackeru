@@ -63,7 +63,7 @@ let clearForm = function() {
   taskDate.value = '';
   taskCheck.checked = false;
   btnAdd.textContent = 'Добавить';
-  btnAdd.classList.remove('btn-warning');
+  btnAdd.classList.remove('А');
   btnClear.textContent = 'Очистить';
   state.statusEdit = false;
   state.editIndex = null;
