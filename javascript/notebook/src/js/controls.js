@@ -126,10 +126,15 @@ let controls = function(manager) {
   let btnAdded = taskEdit.inputAdded;
   btnAdded.addEventListener('click', function() {
     if (checkForm()) {
-      state.tasksStorage.push( taskEdit.value() );
+      if (taskEdit.editIndex === -1) {
+        state.tasksStorage.push( taskEdit.value() );
+      } else {
+        state.tasksStorage[taskEdit.editIndex] = taskEdit.value();
+      }
       manager.setStorage();
       clearForm();
       taskList.refreshList();
+
     }
   });
 

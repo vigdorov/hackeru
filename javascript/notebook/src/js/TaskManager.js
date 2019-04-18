@@ -1,7 +1,8 @@
 const TaskEditing = require('./taskEditing/TaskEditing');
-const TaskList = require('./taskList/TaskList');
-const ModalPopup = require('./modalPopup/ModalPopup');
-const controls = require('./controls');
+const TaskList    = require('./taskList/TaskList');
+const ModalPopup  = require('./modalPopup/ModalPopup');
+const Calendar    = require('./calendar/Calendar');
+const controls    = require('./controls');
 
 let TaskManager = function(parent) {
   window.state = {
@@ -52,6 +53,7 @@ let TaskManager = function(parent) {
   this.taskEdit = new TaskEditing(cardOne);
   this.taskList = new TaskList(cardTwo);
   this.popup = new ModalPopup(parent);
+  this.calendar = new Calendar(this.taskEdit.inputDate);
 
   controls(this);
 };

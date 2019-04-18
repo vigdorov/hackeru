@@ -10,7 +10,7 @@
  */
 
 ;(function() {
-  let createDOMElement = function(tagName, parent, property, attributes) {
+  let createDOMElement = function(tagName, parent, className) {
     if (!tagName) {
       console.error('createDOMElement: tagName is empty!');
       return null;
@@ -25,27 +25,10 @@
         parent.appendChild(element);
       }
 
-      if (property) {
-        let addElementProperty = function(element, property) {
-          for (let key in property) {
-            if (typeof property[key] === 'object') {
-              addElementProperty(element[key], property[key]);
-            } else {
-              element[key] = property[key];
-            }
-          }
-        };
-
-        addElementProperty(element, property);
+      if (className) {
+        element.className = className;
       }
 
-      if (attributes) {
-        for (let attr in attributes) {
-          if (attributes.hasOwnProperty(attr)) {
-            element.setAttribute(attr, attributes[attr]);
-          }
-        }
-      }
     } else {
       let setting = tagName;
       element = document.createElement(setting.tagName);
