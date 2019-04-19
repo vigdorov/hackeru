@@ -6,6 +6,7 @@ let controls = function(manager) {
   let taskList = manager.taskList;
   let popup    = manager.popup;
   let calendar = manager.calendar;
+  let settings = manager.settings;
 
   let clearForm = function() {
     taskEdit.value({
@@ -28,12 +29,12 @@ let controls = function(manager) {
     star: {
       click: function() {
         let index = Number(this.getAttribute('index'));
-        important = state.tasksStorage[index].important;
-        this.classList.remove('fas', 'far');
+        let important = state.tasksStorage[index].important;
+        this.classList.remove('fas', 'far', 'text-warning');
         if (important) {
           this.classList.add('far');
         } else {
-          this.classList.add('fas');
+          this.classList.add('fas', 'text-warning');
         }
         state.tasksStorage[index].important = !important;
         if (taskEdit.editIndex === index) {
@@ -42,14 +43,15 @@ let controls = function(manager) {
         manager.setStorage();
       },
       mouseover: function() {
-        this.classList.add('text-danger');
+        this.classList.add('text-warning');
         this.addEventListener('mouseout', function() {
-          this.classList.remove('text-danger');
+          this.classList.remove('text-warning');
         });
       },
     },
     edit: {
       click: function() {
+        this.classList.remove('text-warning');
         let index = Number(this.getAttribute('index'));
         taskEdit.value(state.tasksStorage[index]);
         taskEdit.edit(index);
@@ -64,6 +66,7 @@ let controls = function(manager) {
     },
     trash: {
       click: function() {
+        this.classList.remove('text-danger');
         let index = Number(this.getAttribute('index'));
         popup.show({
           textHeader: 'Удалить задачу?',
@@ -89,29 +92,24 @@ let controls = function(manager) {
     },
   };
 
-  taskList.refreshList = function() {
-    taskList.refresh(taskIconEvent);
+  let refreshBtnCarousel = function () {
+    let btnGroup = taskList.btnGroup;
+    for (let i = 0; i < btnGroup.childNodes.length; i++) {
+      btnGroup.childNodes[i].addEventListener('click', () => {
+        taskList.numberListActivated = i;
+        taskList.refreshList();
+      });
+    }
   };
 
+  taskList.refreshList = function() {
+    taskList.refresh(taskIconEvent);
+    refreshBtnCarousel();
+  };
+
+
   taskList.refreshList();
-
-  let select = taskList.select;
-  let options = ['Все задачи', 'Просроченные', 'Выполнить сегодня'];
-
-  options.forEach( function(option) {
-    createDOMElement({
-      tagName: 'option',
-      parent: select,
-      property: {
-        textContent: option,
-      }
-    })
-  });
-
-  select.addEventListener('change', function () {
-    state.filterList = select.options.selectedIndex;
-    taskList.refreshList();
-  });
+  refreshBtnCarousel();
 
   let checkForm = function() {
     let notErrors = true;
@@ -196,6 +194,59 @@ let controls = function(manager) {
   let btnCancel = taskEdit.inputCancel;
   btnCancel.addEventListener('click', function() {
     clearForm();
+  });
+
+  let filter = settings.select;
+
+  filter.addEventListener('change', function () {
+    state.temporary.filterList = filter.options.selectedIndex;
+  });
+
+  let tasksOnList = settings.tasksOnList;
+  let taskOnListInput = tasksOnList.getChildren[1];
+  taskOnListInput.addEventListener('keydown', function(e) {
+    let check = (e.keyCode >= 48 && e.keyCode <= 57) ||
+                e.key === 'Backspace' || e.key === 'Delete' ||
+                e.key === 'ArrowLeft' || e.key === 'ArrowRight';
+    if (!check) {
+      e.preventDefault();
+      tasksOnList.errorMsg('Только цифры');
+    } else {
+      taskOnListInput.addEventListener('keyup', function del() {
+        tasksOnList.errorMsg();
+        taskOnListInput.removeEventListener('keyup', del);
+      });
+    }
+  });
+
+  taskOnListInput.addEventListener('change', function() {
+    state.temporary.countTaskOnList = Number(taskOnListInput.value);
+  });
+
+  let settingsBtn = taskList.settings;
+
+  settingsBtn.addEventListener('click', function() {
+    filter.options.selectedIndex = state.filterList;
+    taskOnListInput.value = state.countTaskOnList;
+    popup.show({
+      textHeader: 'Настройки',
+      inner: settings.body,
+      buttons: {
+        textAction: 'Сохранить',
+        textCancel: 'Закрыть',
+        funcAction: function() {
+          state.filterList = state.temporary.filterList;
+          state.countTaskOnList = state.temporary.countTaskOnList;
+          taskList.refreshList();
+        },
+        funcCancel: function() {
+          state.temporary = {
+            filterList: state.filterList,
+            countTaskOnList: state.countTaskOnList,
+          };
+        },
+      },
+    });
   });
 
 };

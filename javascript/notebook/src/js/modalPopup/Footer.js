@@ -11,32 +11,44 @@ let Footer = function(parent) {
 
     footer.innerHTML = '';
 
-    let btnCancel = createDOMElement({
-      tagName: 'button',
-      parent: footer,
-      property: {
-        className: 'btn btn-secondary',
-        textContent: settings.textCancel,
-      },
-      attributes: {
-        'data-dismiss': 'modal',
-      }
-    });
+    let btnCancel;
 
-    let btnAction = createDOMElement({
-      tagName: 'button',
-      parent: footer,
-      property: {
-        className: 'btn btn-danger',
-        textContent: settings.textAction,
-      },
-      attributes: {
-        'data-dismiss': 'modal',
-      }
-    });
+    if (settings.textCancel) {
+      btnCancel = createDOMElement({
+        tagName: 'button',
+        parent: footer,
+        property: {
+          className: 'btn btn-secondary',
+          textContent: settings.textCancel,
+        },
+        attributes: {
+          'data-dismiss': 'modal',
+        }
+      });
+    }
+
+    let btnAction;
+
+    if (settings.textAction) {
+      btnAction = createDOMElement({
+        tagName: 'button',
+        parent: footer,
+        property: {
+          className: 'btn btn-danger',
+          textContent: settings.textAction,
+        },
+        attributes: {
+          'data-dismiss': 'modal',
+        }
+      });
+    }
 
     if (settings.funcAction) {
       btnAction.addEventListener('click', settings.funcAction);
+    }
+
+    if (settings.funcCancel) {
+      btnCancel.addEventListener('click', settings.funcCancel);
     }
   };
 

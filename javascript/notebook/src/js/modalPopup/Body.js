@@ -12,6 +12,12 @@ let Body = function(parent) {
     modalBody.textContent = value;
   };
 
+  this.inner = function(element) {
+    if (element) {
+      modalBody.appendChild(element);
+    }
+  };
+
 };
 
 module.exports = Body;

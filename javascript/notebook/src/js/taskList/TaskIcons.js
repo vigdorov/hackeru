@@ -14,7 +14,6 @@ let TaskIcons = function(settings) {
     property: {
       className: important ? 'fas fa-star' : 'far fa-star',
       style: {
-        color: '#f5d000',
         cursor: 'pointer',
       }
     },
@@ -37,7 +36,6 @@ let TaskIcons = function(settings) {
     property: {
       className: 'fas fa-pen',
       style: {
-        color: '#000000',
         cursor: 'pointer',
       },
     },
@@ -60,7 +58,6 @@ let TaskIcons = function(settings) {
     property: {
       className: 'far fa-trash-alt',
       style: {
-        color: '#000000',
         cursor: 'pointer',
       },
     },

@@ -1,6 +1,7 @@
+const Settings    = require('./Settings');
+const ModalPopup  = require('./modalPopup/ModalPopup');
 const TaskEditing = require('./taskEditing/TaskEditing');
 const TaskList    = require('./taskList/TaskList');
-const ModalPopup  = require('./modalPopup/ModalPopup');
 const Calendar    = require('./calendar/Calendar');
 const controls    = require('./controls');
 
@@ -8,11 +9,23 @@ let TaskManager = function(parent) {
   window.state = {
     tasksStorage: [],
     filterList: 0,
+    countTaskOnList: 2,
+    temporary: {
+      filterList: this.filterList,
+      countTaskOnList: this.countTaskOnList,
+    },
+  };
+
+  state.temporary = {
+    filterList: state.filterList,
+    countTaskOnList: state.countTaskOnList,
   };
 
   this.getStorage = function() {
     state.tasksStorage = JSON.parse(localStorage.getItem('notes')) || [];
   };
+
+  this.getStorage();
 
   this.setStorage = function() {
     let parse = JSON.stringify(state.tasksStorage);
@@ -59,10 +72,11 @@ let TaskManager = function(parent) {
     },
   });
 
+  this.settings = new Settings();
+  this.popup = new ModalPopup(parent);
   this.taskEdit = new TaskEditing(cardOne);
   this.calendar = new Calendar(this.taskEdit.inputDate);
-  this.taskList = new TaskList(cardTwo, this.calendar);
-  this.popup = new ModalPopup(parent);
+  this.taskList = new TaskList(cardTwo, this);
 
 
   controls(this);

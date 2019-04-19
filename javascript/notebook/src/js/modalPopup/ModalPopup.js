@@ -45,6 +45,7 @@ let ModalPopup = function(parent) {
   this.show = function(settings) {
     header.value(settings.textHeader);
     body.value(settings.textMessage);
+    body.inner(settings.inner);
     footer.setButtons(settings.buttons);
   };
 

@@ -59,8 +59,11 @@ let TaskElement = function(settings, calendar) {
   });
 
   let date = calendar.dateToArray(task.date);
-  let difference = new Date(date[2], date[1] - 1, date[0]) - new Date();
+  let temp = new Date();
+  let today = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate());
+  let difference = new Date(date[2], date[1] - 1, date[0]) - today;
   let days = calendar.msToDay(difference);
+
 
   let color = 'badge-primary';
   if (days === 0) {

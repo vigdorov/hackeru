@@ -1,12 +1,15 @@
 const TaskElement = require('./TaskElement');
 
-let TaskList = function(parent, calendar) {
+let TaskList = function(parent, manager) {
 
   let div = createDOMElement({
     tagName: 'div',
     parent: parent,
     property: {
       className: 'card-body',
+      style: {
+        position: 'relative',
+      }
     },
   });
 
@@ -18,14 +21,21 @@ let TaskList = function(parent, calendar) {
     },
   });
 
-  let menuGroup = createDOMElement('div', div, 'form-group');
-
-  this.select = createDOMElement({
-    tagName: 'select',
-    parent: menuGroup,
+  this.settings = createDOMElement({
+    tagName: 'h4',
+    parent: div,
     property: {
-      className: 'form-control form-control-sm col-12 col-md-6',
+      className: 'fas fa-sliders-h',
+      style: {
+        position: 'absolute',
+        top: '29px',
+        right: '20px',
+      },
     },
+    attributes: {
+      'data-toggle': 'modal',
+      'data-target': '#exampleModalCenter',
+    }
   });
 
   let ul = createDOMElement({
@@ -36,6 +46,8 @@ let TaskList = function(parent, calendar) {
     },
   });
 
+  this.numberListActivated = 0;
+
   this.tasks = [];
 
   this.refresh = function(events) {
@@ -44,20 +56,23 @@ let TaskList = function(parent, calendar) {
     this.tasks = [];
 
     state.tasksStorage.sort( function(a, b) {
-      let first = calendar.arrayToDate( calendar.dateToArray(a.date) );
-      let second = calendar.arrayToDate( calendar.dateToArray(b.date) );
+      let first = manager.calendar.arrayToDate( manager.calendar.dateToArray(a.date) );
+      let second = manager.calendar.arrayToDate( manager.calendar.dateToArray(b.date) );
       if (first > second) return  1;
       if (first < second) return -1;
       return 0;
     });
 
-    for (let index in state.tasksStorage) {
 
-      let task = state.tasksStorage[index];
+    let startIndex = this.numberListActivated * state.countTaskOnList;
+    let finalIndex = Math.min(startIndex + state.countTaskOnList, state.tasksStorage.length);
+    for (let i = startIndex; i < finalIndex; i++) {
 
-      let date = calendar.dateToArray(task.date);
+      let task = state.tasksStorage[i];
+
+      let date = manager.calendar.dateToArray(task.date);
       let difference = new Date(date[2], date[1] - 1, date[0]) - new Date();
-      let days = calendar.msToDay(difference);
+      let days = manager.calendar.msToDay(difference);
 
       let filter = false;
 
@@ -74,8 +89,8 @@ let TaskList = function(parent, calendar) {
       if (filter) {
         let li = new TaskElement({
           parent: ul,
-          index: index,
-        }, calendar);
+          index: i,
+        }, manager.calendar);
 
         for (let iconKey in li.icons) {
           let eventsForThisIcon = events[iconKey];
@@ -90,7 +105,49 @@ let TaskList = function(parent, calendar) {
         this.tasks.push(li);
       }
     }
+
+    let listsTasks = Math.ceil(state.tasksStorage.length / state.countTaskOnList);
+
+    this.btnGroup.innerHTML = '';
+
+    for (let i = 0; i < listsTasks; i++) {
+      if (listsTasks > 1) {
+        createDOMElement({
+          tagName: 'button',
+          parent: this.btnGroup,
+          property: {
+            className: 'btn btn-primary',
+            textContent: i + 1,
+          },
+        });
+      }
+    }
   };
+
+  let buttonsPages = createDOMElement({
+    tagName: 'div',
+    parent: div,
+    property: {
+      className: 'btn-toolbar justify-content-center',
+      style: {
+        paddingTop: '10px',
+      },
+    },
+    attributes: {
+      role: 'toolbar',
+    },
+  });
+
+  this.btnGroup = createDOMElement({
+    tagName: 'div',
+    parent: buttonsPages,
+    property: {
+      className: 'btn-group mr-2',
+    },
+    attributes: {
+      role: 'group',
+    },
+  });
 
   this.activated = function(index = -1) {
     for (let i = 0; i < this.tasks.length; i++) {

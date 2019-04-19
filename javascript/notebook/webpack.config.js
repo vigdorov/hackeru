@@ -12,8 +12,8 @@ module.exports = {
   },
   devServer: {
     compress: true,
-    host: '192.168.1.4',
-    useLocalIp: true,
+    //host: '0.0.0.0',
+    //useLocalIp: true,
     port: 8000,
     open: 'Chrome',
   },
