@@ -5,6 +5,7 @@ let controls = function(manager) {
   let taskEdit = manager.taskEdit;
   let taskList = manager.taskList;
   let popup    = manager.popup;
+  let calendar = manager.calendar;
 
   let clearForm = function() {
     taskEdit.value({
@@ -20,6 +21,7 @@ let controls = function(manager) {
     taskEdit.inputAdded.classList.remove('btn-warning');
     taskEdit.inputCancel.textContent = 'Очистить';
     taskList.activated();
+    document.getElementById('date-popup').style.display = 'none';
   };
 
   let taskIconEvent = {
@@ -93,6 +95,24 @@ let controls = function(manager) {
 
   taskList.refreshList();
 
+  let select = taskList.select;
+  let options = ['Все задачи', 'Просроченные', 'Выполнить сегодня'];
+
+  options.forEach( function(option) {
+    createDOMElement({
+      tagName: 'option',
+      parent: select,
+      property: {
+        textContent: option,
+      }
+    })
+  });
+
+  select.addEventListener('change', function () {
+    state.filterList = select.options.selectedIndex;
+    taskList.refreshList();
+  });
+
   let checkForm = function() {
     let notErrors = true;
     let errors = {
@@ -110,8 +130,41 @@ let controls = function(manager) {
       });
     }
 
-    if (taskEdit.inputDate.value.length === 0) {
-      errors.taskDate = 'Введите дату события';
+    let checkDate = function(value) {
+
+      let date = calendar.dateToArray(value);
+
+      if (date.length === 0) {
+        return 'Введите дату';
+      }
+
+      if (date[1] > 12) {
+        return date[1] + ' - такого месяца не существует';
+      }
+
+      if ((date[2] < 1000 || date[2] > 9999) && (date[2] > 99) ) {
+        return 'Укажите год в формате - ГГГГ или ГГ';
+      }
+
+      for (let i = 0; i < date.length; i++) {
+        if (isNaN( Number(date[i])) ) {
+          return 'Введите дату в формате ДД.ММ.ГГГГ';
+        }
+      }
+
+      let daysMonth = 32 - new Date(date[2], date[1] - 1, 32).getDate();
+      let days = daysMonth === 31 ? ' день' : ' дней';
+      if (date[0] > daysMonth) {
+        return 'В указанном месяце только ' + daysMonth + days;
+      }
+
+      return '';
+    };
+
+    let msg = checkDate(taskEdit.inputDate.value);
+
+    if (msg) {
+      errors.taskDate = msg;
       notErrors = false;
       taskEdit.inputDate.addEventListener('click', function del() {
         taskEdit.getChildren.taskDate.errorMsg();
@@ -126,10 +179,12 @@ let controls = function(manager) {
   let btnAdded = taskEdit.inputAdded;
   btnAdded.addEventListener('click', function() {
     if (checkForm()) {
+      let form  = taskEdit.value();
+      form.date = calendar.arrayToString( calendar.dateToArray(form.date) );
       if (taskEdit.editIndex === -1) {
-        state.tasksStorage.push( taskEdit.value() );
+        state.tasksStorage.push( form );
       } else {
-        state.tasksStorage[taskEdit.editIndex] = taskEdit.value();
+        state.tasksStorage[taskEdit.editIndex] = form;
       }
       manager.setStorage();
       clearForm();

@@ -1,6 +1,6 @@
 const TaskElement = require('./TaskElement');
 
-let TaskList = function(parent) {
+let TaskList = function(parent, calendar) {
 
   let div = createDOMElement({
     tagName: 'div',
@@ -15,6 +15,16 @@ let TaskList = function(parent) {
     parent: div,
     property: {
       textContent: 'Список задач',
+    },
+  });
+
+  let menuGroup = createDOMElement('div', div, 'form-group');
+
+  this.select = createDOMElement({
+    tagName: 'select',
+    parent: menuGroup,
+    property: {
+      className: 'form-control form-control-sm col-12 col-md-6',
     },
   });
 
@@ -33,24 +43,52 @@ let TaskList = function(parent) {
     ul.innerHTML = '';
     this.tasks = [];
 
+    state.tasksStorage.sort( function(a, b) {
+      let first = calendar.arrayToDate( calendar.dateToArray(a.date) );
+      let second = calendar.arrayToDate( calendar.dateToArray(b.date) );
+      if (first > second) return  1;
+      if (first < second) return -1;
+      return 0;
+    });
+
     for (let index in state.tasksStorage) {
 
-      let li = new TaskElement({
-        parent: ul,
-        index: index,
-      });
+      let task = state.tasksStorage[index];
 
-      for (let iconKey in li.icons) {
-        let eventsForThisIcon = events[iconKey];
-        if (eventsForThisIcon) {
-          for (let eventKey in eventsForThisIcon) {
-            let event = eventsForThisIcon[eventKey];
-            li.icons[iconKey].addEventListener(eventKey, event);
-          }
-        }
+      let date = calendar.dateToArray(task.date);
+      let difference = new Date(date[2], date[1] - 1, date[0]) - new Date();
+      let days = calendar.msToDay(difference);
+
+      let filter = false;
+
+      if (state.filterList === 0) {
+        filter = true;
+      }
+      if (state.filterList === 1 && days < 0) {
+        filter = true;
+      }
+      if (state.filterList === 2 && days === 0) {
+        filter = true;
       }
 
-      this.tasks.push(li);
+      if (filter) {
+        let li = new TaskElement({
+          parent: ul,
+          index: index,
+        }, calendar);
+
+        for (let iconKey in li.icons) {
+          let eventsForThisIcon = events[iconKey];
+          if (eventsForThisIcon) {
+            for (let eventKey in eventsForThisIcon) {
+              let event = eventsForThisIcon[eventKey];
+              li.icons[iconKey].addEventListener(eventKey, event);
+            }
+          }
+        }
+
+        this.tasks.push(li);
+      }
     }
   };
 

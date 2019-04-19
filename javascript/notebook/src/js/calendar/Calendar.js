@@ -59,13 +59,35 @@ let Calendar = function(parent) {
   };
 
   this.arrayToString = function(date) {
+
+    date.forEach( function(elem, i) {
+      date[i] = Number(elem);
+    });
+
     if (date[0] < 10) {
       date[0] = '0' + date[0];
     }
+
     if (date[1] < 10) {
       date[1] = '0' + date[1];
     }
+
+    if (date[2] < 10) {
+      date[2] = '200' + date[2];
+    } else if (date[2] < 100) {
+      date[2] = '20' + date[2];
+    }
+
     return date[0] + '.' + date[1] + '.' + date[2];
+  };
+
+  this.msToDay = function(ms) {
+    let result = ms / 86400000;
+    if (result >= 0) {
+      return Math.floor(result);
+    } else {
+      return Math.ceil(result);
+    }
   };
 
   this.createCalendar = function() {
@@ -83,7 +105,7 @@ let Calendar = function(parent) {
     });
   };
 
-  let card = createDOMElement({
+  this.card = createDOMElement({
     tagName: 'div',
     parent: div,
     property: {
@@ -91,33 +113,39 @@ let Calendar = function(parent) {
       style: {
         display: 'none',
         position: 'absolute',
-        width: '350px',
+        width: '280px',
         height: '280px',
         top: '-251px',
-        left: '2px',
-      }
+        left: '-15px',
+      },
+      id: 'date-popup',
     },
   });
 
   this.input.addEventListener('click', () => {
-    card.style.display = 'block';
+    this.card.style.display = 'block';
     this.createCalendar();
 
     document.body.addEventListener('mousedown', function del(e) {
-      let isPopup = false;
-      for (let i = 0; i < e.path.length; i++) {
-        if (e.path[i].className === 'card date-popup') {
-          isPopup = true;
+      let isPopup = function(target) {
+        if (target === null) {
+          return false;
         }
-      }
-      if (!isPopup) {
-        card.style.display = 'none';
-        document.body.removeEventListener('mousedown', del);
+        if (target.className === 'card date-popup') {
+          return true;
+        }
+        return isPopup(target.parentNode);
+      };
+
+      if ( !isPopup(e.target) ) {
+        document.getElementById('date-popup').style.display = 'none';
+        document.body.removeEventListener('touchstart', del);
       }
     });
+
   });
 
-  let cardBody = createDOMElement('div', card, 'card-body');
+  let cardBody = createDOMElement('div', this.card, 'card-body');
   let rowUp = createDOMElement('div', cardBody, 'row justify-content-between');
   let colUpLeft = createDOMElement('div', rowUp, 'col text-left');
 

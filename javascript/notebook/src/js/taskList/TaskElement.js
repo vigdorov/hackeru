@@ -1,6 +1,6 @@
 const TaskIcons = require('./TaskIcons');
 
-let TaskElement = function(settings) {
+let TaskElement = function(settings, calendar) {
 
   this.li = createDOMElement({
     tagName: 'li',
@@ -42,12 +42,73 @@ let TaskElement = function(settings) {
     },
   });
 
-  let small = createDOMElement({
-    tagName: 'small',
+  let divDate = createDOMElement({
+    tagName: 'div',
     parent: this.li,
     property: {
-      textContent: 'Дата: ' + task.date,
+      className: 'd-flex w-100 justify-content-between',
+    },
+  });
+
+  let small = createDOMElement({
+    tagName: 'small',
+    parent: divDate,
+    property: {
+      textContent: 'Выполнить: ',
+    },
+  });
+
+  let date = calendar.dateToArray(task.date);
+  let difference = new Date(date[2], date[1] - 1, date[0]) - new Date();
+  let days = calendar.msToDay(difference);
+
+  let color = 'badge-primary';
+  if (days === 0) {
+    color = 'badge-warning';
+  } else if (days < 0) {
+    color = 'badge-danger';
+  }
+
+  let currentDate = createDOMElement({
+    tagName: 'span',
+    parent: small,
+    property: {
+      className: 'badge badge-pill ' + color,
+      textContent: task.date,
+    },
+  });
+
+
+  let termDays = Math.abs(days);
+  let message = days;
+
+  if (termDays < 10 || termDays > 19) {
+
+    switch(termDays % 10) {
+      case 2: case 3: case 4:
+        message += ' дня'; break;
+      case 1:
+        message += ' день'; break;
+      default:
+        message += ' дней'; break;
     }
+  } else {
+    message += ' дней';
+  }
+
+  if (days === 0) {
+    message = 'сегодня';
+  }
+
+  let term = createDOMElement('small', divDate);
+
+  createDOMElement({
+    tagName: 'span',
+    parent: term,
+    property: {
+      className: 'badge badge-pill ' + color,
+      textContent: message,
+    },
   });
 
 };

@@ -7,6 +7,7 @@ const controls    = require('./controls');
 let TaskManager = function(parent) {
   window.state = {
     tasksStorage: [],
+    filterList: 0,
   };
 
   this.getStorage = function() {
@@ -18,9 +19,17 @@ let TaskManager = function(parent) {
     localStorage.setItem('notes', parse);
   };
 
+  let body = createDOMElement({
+    tagName: 'div',
+    parent: parent,
+    property: {
+      className: 'container',
+    }
+  });
+
   createDOMElement({
     tagName: 'h1',
-    parent: parent,
+    parent: body,
     property: {
       textContent: 'Менеджер задач',
     },
@@ -28,7 +37,7 @@ let TaskManager = function(parent) {
 
   let row = createDOMElement({
     tagName: 'div',
-    parent: parent,
+    parent: body,
     property: {
       className: 'row',
     },
@@ -38,7 +47,7 @@ let TaskManager = function(parent) {
     tagName: 'div',
     parent: row,
     property: {
-      className: 'col-6 card',
+      className: 'col-12 col-lg-6 col-xl-4 card',
     },
   });
 
@@ -46,62 +55,17 @@ let TaskManager = function(parent) {
     tagName: 'div',
     parent: row,
     property: {
-      className: 'col-6 card',
+      className: 'col-12 col-lg-6 col-xl-8 card',
     },
   });
 
   this.taskEdit = new TaskEditing(cardOne);
-  this.taskList = new TaskList(cardTwo);
-  this.popup = new ModalPopup(parent);
   this.calendar = new Calendar(this.taskEdit.inputDate);
+  this.taskList = new TaskList(cardTwo, this.calendar);
+  this.popup = new ModalPopup(parent);
+
 
   controls(this);
 };
 
 module.exports = TaskManager;
-
-
-
-/*
-(function() {
-
-
-  const state = {
-    taskStorage: [],
-    editIndex: -1,
-    getStorage: function() {
-      this.taskStorage = JSON.parse(localStorage.getItem('notes')) || [];
-    },
-    setStorage: function() {
-      let parse = JSON.stringify(this.taskStorage);
-      localStorage.setItem('notes', parse);
-    },
-    calendarDate: [],
-    previousMonths: function() {
-      let month = this.calendarDate[1];
-      let year = this.calendarDate[2];
-      this.calendarDate[0] = 1;
-      this.calendarDate[1] = month === 0 ? 11 : month - 1;
-      this.calendarDate[2] = month === 0 ? year - 1: year;
-    },
-    nextMonths: function() {
-      this.calendarDate[0] = 1;
-      let month = this.calendarDate[1];
-      let year = this.calendarDate[2];
-      this.calendarDate[1] = month === 11 ? 0 : month + 1;
-      this.calendarDate[2] = month === 11 ? year + 1: year;
-    },
-    filter: '0',
-    period: true,
-    constants: {
-      starsColor: '#f5d000',
-      editColor : 'black',
-      trashColor: 'black',
-    }
-  };
-  state.getStorage();
-
-  window.taskManager = taskManager;
-  window.state = state;
-})();
-*/

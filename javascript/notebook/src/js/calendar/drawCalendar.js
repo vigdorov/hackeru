@@ -53,7 +53,7 @@ let drawCalendar = function(calendar, settings) {
           calendar.input.value = calendar.arrayToString(
             calendar.dateToArray(calendar.currentDay)
           );
-          //document.getElementById('date-popup').style.display = 'none';
+          calendar.card.style.display = 'none';
         });
       }
     }
