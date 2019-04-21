@@ -84,10 +84,15 @@ let Calendar = function(parent) {
   this.msToDay = function(ms) {
     let result = ms / 86400000;
     if (result >= 0) {
-      return Math.floor(result);
+      result = Math.floor(result);
+
     } else {
-      return Math.ceil(result);
+      result = Math.ceil(result);
     }
+    if (result === -0) {
+      result = 0;
+    }
+    return result;
   };
 
   this.createCalendar = function() {

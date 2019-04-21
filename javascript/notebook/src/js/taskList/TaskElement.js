@@ -2,11 +2,15 @@ const TaskIcons = require('./TaskIcons');
 
 let TaskElement = function(settings, calendar) {
 
+  this.index = settings.index;
+  let task = state.tasksStorage[this.index];
+  let nameClassForLi = 'list-group-item-' + task.category.color;
+
   this.li = createDOMElement({
     tagName: 'li',
     parent: settings.parent,
     property: {
-      className: 'list-group-item list-group-item-action',
+      className: 'list-group-item list-group-item-action ' + nameClassForLi,
     },
   });
 
@@ -18,15 +22,21 @@ let TaskElement = function(settings, calendar) {
     },
   });
 
-  this.index = settings.index;
-  let task = state.tasksStorage[this.index];
-
   let header = createDOMElement({
     tagName: 'h5',
     parent: div,
     property: {
-      textContent: task.name,
+      textContent: task.name + ' ',
     },
+  });
+
+  createDOMElement({
+    tagName: 'span',
+    parent: header,
+    property: {
+      className: 'badge badge-' + task.category.color,
+      textContent: task.category.name,
+    }
   });
 
   this.icons = new TaskIcons({

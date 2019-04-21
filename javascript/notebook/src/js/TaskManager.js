@@ -1,4 +1,4 @@
-const Settings    = require('./Settings');
+const Settings    = require('./settings/Settings');
 const ModalPopup  = require('./modalPopup/ModalPopup');
 const TaskEditing = require('./taskEditing/TaskEditing');
 const TaskList    = require('./taskList/TaskList');
@@ -7,29 +7,36 @@ const controls    = require('./controls');
 
 let TaskManager = function(parent) {
   window.state = {
-    tasksStorage: [],
-    filterList: 0,
-    countTaskOnList: 2,
-    temporary: {
-      filterList: this.filterList,
-      countTaskOnList: this.countTaskOnList,
-    },
-  };
+    tasksStorage: [],         // все задачи которые есть
+    filteredTasksStorage: [], // отфильтрованные задачи
 
-  state.temporary = {
-    filterList: state.filterList,
-    countTaskOnList: state.countTaskOnList,
+    settings: {           // Настройки
+      filterList: 0,      // какой фильтр задач используется
+      countTaskOnList: 5, // сколько задач показывать на странице
+      nameCategory: [],   // Список всех категорий
+    },
+    temporary: {},        // временное хранилище параметров настроек, пока пользователь не принял или не отклонил их
   };
 
   this.getStorage = function() {
     state.tasksStorage = JSON.parse(localStorage.getItem('notes')) || [];
+    state.settings.nameCategory = JSON.parse(localStorage.getItem('category')) || [];
   };
 
   this.getStorage();
 
+  // заносим базовые настройки
+  state.temporary = {
+    filterList: state.settings.filterList,
+    countTaskOnList: state.settings.countTaskOnList,
+    nameCategory: state.settings.nameCategory.slice(),
+  };
+
   this.setStorage = function() {
-    let parse = JSON.stringify(state.tasksStorage);
-    localStorage.setItem('notes', parse);
+    let notes = JSON.stringify(state.tasksStorage);
+    let category = JSON.stringify(state.settings.nameCategory);
+    localStorage.setItem('notes', notes);
+    localStorage.setItem('category', category);
   };
 
   let body = createDOMElement({

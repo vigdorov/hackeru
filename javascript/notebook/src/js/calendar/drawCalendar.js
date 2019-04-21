@@ -33,16 +33,27 @@ let drawCalendar = function(calendar, settings) {
         tagName: cell,
         parent: tr,
         property: {
-          className: 'text-center',
+          className: 'text-center alert',
           textContent: content,
         },
       });
 
       if (isNumber) {
+        let inputDateValue = document.getElementById('task-date').value;
+        let date = calendar.dateToArray(inputDateValue);
+        if (inputDateValue === '') {
+          date = calendar.dateToArray(new Date);
+        }
+        if (date[1] - 1 === settings.month) {
+          if (Number(date[0]) === content) {
+            td.classList.add('alert-primary');
+          }
+        }
+
         td.addEventListener('mouseover', function() {
-          td.classList.add('alert', 'alert-primary');
+          td.classList.add('alert-success');
           td.addEventListener('mouseout', function() {
-            td.classList.remove('alert', 'alert-primary');
+            td.classList.remove('alert-success');
           });
         });
         td.style.cursor = 'pointer';

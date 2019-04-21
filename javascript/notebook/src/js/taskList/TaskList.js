@@ -46,15 +46,19 @@ let TaskList = function(parent, manager) {
     },
   });
 
+  // хранит какой лист задач сейчас открыт
   this.numberListActivated = 0;
 
+  // хранит объекты задач, которые сейчас отображены на странице
   this.tasks = [];
 
   this.refresh = function(events) {
 
+    // Очищаем лист задач и объект хранения элементов задачи
     ul.innerHTML = '';
     this.tasks = [];
 
+    // Сортируем данные в массиве по дате (по возрастанию)
     state.tasksStorage.sort( function(a, b) {
       let first = manager.calendar.arrayToDate( manager.calendar.dateToArray(a.date) );
       let second = manager.calendar.arrayToDate( manager.calendar.dateToArray(b.date) );
@@ -63,50 +67,55 @@ let TaskList = function(parent, manager) {
       return 0;
     });
 
+    // Очищаем временный массив отфильтрованных тасков
+    state.filteredTasksStorage = [];
 
-    let startIndex = this.numberListActivated * state.countTaskOnList;
-    let finalIndex = Math.min(startIndex + state.countTaskOnList, state.tasksStorage.length);
-    for (let i = startIndex; i < finalIndex; i++) {
-
-      let task = state.tasksStorage[i];
-
+    // Фильтруем задачи по признаку, занося их во временный массив
+    state.tasksStorage.forEach( function (task, index) {
       let date = manager.calendar.dateToArray(task.date);
       let difference = new Date(date[2], date[1] - 1, date[0]) - new Date();
       let days = manager.calendar.msToDay(difference);
+      task.realIndex = index;
 
-      let filter = false;
-
-      if (state.filterList === 0) {
-        filter = true;
+      if (state.settings.filterList === 0) {
+        state.filteredTasksStorage.push(task);
       }
-      if (state.filterList === 1 && days < 0) {
-        filter = true;
+      if (state.settings.filterList === 1 && days < 0) {
+        state.filteredTasksStorage.push(task);
       }
-      if (state.filterList === 2 && days === 0) {
-        filter = true;
+      if (state.settings.filterList === 2 && days === 0) {
+        state.filteredTasksStorage.push(task);
       }
 
-      if (filter) {
-        let li = new TaskElement({
-          parent: ul,
-          index: i,
-        }, manager.calendar);
+    });
 
-        for (let iconKey in li.icons) {
-          let eventsForThisIcon = events[iconKey];
-          if (eventsForThisIcon) {
-            for (let eventKey in eventsForThisIcon) {
-              let event = eventsForThisIcon[eventKey];
-              li.icons[iconKey].addEventListener(eventKey, event);
-            }
+    // Рисуем задачи из отфильтрованного массива.
+
+    let startIndex = this.numberListActivated * state.settings.countTaskOnList;
+    let finalIndex = Math.min(startIndex + state.settings.countTaskOnList, state.filteredTasksStorage.length);
+    for (let i = startIndex; i < finalIndex; i++) {
+
+      let task = state.filteredTasksStorage[i];
+
+      let li = new TaskElement({
+        parent: ul,
+        index: task.realIndex,
+      }, manager.calendar);
+
+      for (let iconKey in li.icons) {
+        let eventsForThisIcon = events[iconKey];
+        if (eventsForThisIcon) {
+          for (let eventKey in eventsForThisIcon) {
+            let event = eventsForThisIcon[eventKey];
+            li.icons[iconKey].addEventListener(eventKey, event);
           }
         }
-
-        this.tasks.push(li);
       }
+
+      this.tasks.push(li);
     }
 
-    let listsTasks = Math.ceil(state.tasksStorage.length / state.countTaskOnList);
+    let listsTasks = Math.ceil(state.filteredTasksStorage.length / state.settings.countTaskOnList);
 
     this.btnGroup.innerHTML = '';
 

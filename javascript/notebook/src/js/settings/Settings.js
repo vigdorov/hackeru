@@ -1,4 +1,5 @@
-const FormGroup = require('./taskEditing/FormGroup');
+const FormGroup = require('../taskEditing/FormGroup');
+const CategoryControl = require ('./CategoryControl');
 
 let Settings = function() {
   this.body = createDOMElement('div', false, 'form-group');
@@ -47,6 +48,8 @@ let Settings = function() {
     type: 'text',
     imp: false,
   });
+
+  this.categoryControl = new CategoryControl(this.body);
 
 };
 

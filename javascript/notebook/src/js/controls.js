@@ -1,19 +1,27 @@
 let controls = function(manager) {
 
+  // загружаем последние данные из local storage
   manager.getStorage();
+  state.countFilteredTasks = state.tasksStorage.length;
 
+  // получаем более удобные имена для объектов интерфейса
   let taskEdit = manager.taskEdit;
   let taskList = manager.taskList;
   let popup    = manager.popup;
   let calendar = manager.calendar;
   let settings = manager.settings;
 
+  // Очистка формы
   let clearForm = function() {
     taskEdit.value({
       name: '',
       description: '',
       date: '',
       important: false,
+      category: {
+        name: 'Без категории',
+        color: 'secondary',
+      }
     });
     taskEdit.edit();
     taskEdit.errors();
@@ -25,6 +33,7 @@ let controls = function(manager) {
     document.getElementById('date-popup').style.display = 'none';
   };
 
+  // Описываем события при нажатии иконок на задача в списке задач
   let taskIconEvent = {
     star: {
       click: function() {
@@ -92,6 +101,7 @@ let controls = function(manager) {
     },
   };
 
+  // Назначаем события на кнопки карусели под задачами
   let refreshBtnCarousel = function () {
     let btnGroup = taskList.btnGroup;
     for (let i = 0; i < btnGroup.childNodes.length; i++) {
@@ -102,15 +112,17 @@ let controls = function(manager) {
     }
   };
 
+  // Перерисовываем лист задач и обновляем события на кнопках карусели
   taskList.refreshList = function() {
     taskList.refresh(taskIconEvent);
     refreshBtnCarousel();
   };
 
-
+  // Запускаем функцию обновления
   taskList.refreshList();
   refreshBtnCarousel();
 
+  // Проверяет поля на правильность
   let checkForm = function() {
     let notErrors = true;
     let errors = {
@@ -132,7 +144,7 @@ let controls = function(manager) {
 
       let date = calendar.dateToArray(value);
 
-      if (date.length === 0) {
+      if (date.length < 3) {
         return 'Введите дату';
       }
 
@@ -174,6 +186,7 @@ let controls = function(manager) {
     return notErrors;
   };
 
+  // Назначаем события на кнопку добавить\изменить в TaskEditing
   let btnAdded = taskEdit.inputAdded;
   btnAdded.addEventListener('click', function() {
     if (checkForm()) {
@@ -191,20 +204,24 @@ let controls = function(manager) {
     }
   });
 
+  // Назначаем события на кнопку Очистить\Отмена
   let btnCancel = taskEdit.inputCancel;
   btnCancel.addEventListener('click', function() {
     clearForm();
   });
 
-  let filter = settings.select;
-
-  filter.addEventListener('change', function () {
-    state.temporary.filterList = filter.options.selectedIndex;
+  // Настраиваем формы управления в меню настроек
+  // Поле фильтра задач
+  let inputFilter = settings.select;
+  inputFilter.addEventListener('change', function () {
+    state.temporary.filterList = inputFilter.options.selectedIndex;
   });
 
+  // Поле выбора количества задач на странице
   let tasksOnList = settings.tasksOnList;
-  let taskOnListInput = tasksOnList.getChildren[1];
-  taskOnListInput.addEventListener('keydown', function(e) {
+  let tasksOnListInput = tasksOnList.getChildren[1];
+
+  tasksOnListInput.addEventListener('keydown', function(e) {
     let check = (e.keyCode >= 48 && e.keyCode <= 57) ||
                 e.key === 'Backspace' || e.key === 'Delete' ||
                 e.key === 'ArrowLeft' || e.key === 'ArrowRight';
@@ -212,22 +229,50 @@ let controls = function(manager) {
       e.preventDefault();
       tasksOnList.errorMsg('Только цифры');
     } else {
-      taskOnListInput.addEventListener('keyup', function del() {
+      tasksOnListInput.addEventListener('keyup', function del() {
         tasksOnList.errorMsg();
-        taskOnListInput.removeEventListener('keyup', del);
+        tasksOnListInput.removeEventListener('keyup', del);
       });
     }
   });
 
-  taskOnListInput.addEventListener('change', function() {
-    state.temporary.countTaskOnList = Number(taskOnListInput.value);
+  tasksOnListInput.addEventListener('change', function() {
+    state.temporary.countTaskOnList = Number(tasksOnListInput.value);
   });
 
+  // Настраиваем кнопку добавить категорию
+  let buttonAddColor = settings.categoryControl.buttonAddColor;
+  let inputCategory  = settings.categoryControl.input;
+
+  buttonAddColor.addEventListener('click', function () {
+    if (inputCategory.value === '') {
+      settings.categoryControl.errorMsg('Укажите название категории');
+      inputCategory.addEventListener('click', function del () {
+        settings.categoryControl.errorMsg();
+        inputCategory.removeEventListener('click', del);
+      })
+    } else {
+      state.temporary.nameCategory.push({
+        name: inputCategory.value,
+        color: settings.categoryControl.colorValue(),
+      });
+      settings.categoryControl.refreshCategory();
+      settings.categoryControl.refreshButton();
+    }
+  });
+
+  // Действие при нажатии на кнопку настроек. Вызываем popup окно и
+  // закидываем туда форму с настройками
   let settingsBtn = taskList.settings;
 
   settingsBtn.addEventListener('click', function() {
-    filter.options.selectedIndex = state.filterList;
-    taskOnListInput.value = state.countTaskOnList;
+    // Обновляем формы в настройках
+    inputFilter.options.selectedIndex = state.settings.filterList;
+    tasksOnListInput.value = state.settings.countTaskOnList;
+    state.temporary.nameCategory = state.settings.nameCategory.slice();
+    settings.categoryControl.refreshCategory();
+
+    // запускаем popup окно
     popup.show({
       textHeader: 'Настройки',
       inner: settings.body,
@@ -235,14 +280,20 @@ let controls = function(manager) {
         textAction: 'Сохранить',
         textCancel: 'Закрыть',
         funcAction: function() {
-          state.filterList = state.temporary.filterList;
-          state.countTaskOnList = state.temporary.countTaskOnList;
+          state.settings.filterList = state.temporary.filterList;
+          state.settings.countTaskOnList = state.temporary.countTaskOnList;
+          let nameCategory = state.settings.nameCategory;
+          let nameCategoryTemp = state.temporary.nameCategory;
+          state.settings.nameCategory = nameCategoryTemp.slice();
+          settings.categoryControl.refreshButton();
+          manager.setStorage();
           taskList.refreshList();
         },
         funcCancel: function() {
           state.temporary = {
-            filterList: state.filterList,
-            countTaskOnList: state.countTaskOnList,
+            filterList: state.settings.filterList,
+            countTaskOnList: state.settings.countTaskOnList,
+            nameCategory: state.settings.nameCategory.slice(),
           };
         },
       },

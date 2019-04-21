@@ -1,5 +1,6 @@
 const FormGroup = require('./FormGroup');
 const CheckboxGroup = require('./CheckboxGroup');
+const CategoryGroup = require('./CategoryGroup');
 const ButtonsGroup = require('./ButtonsGroup');
 
 let TaskEditing = function(parent) {
@@ -22,7 +23,7 @@ let TaskEditing = function(parent) {
 
   let taskName = new FormGroup({
     parent: div,
-    label: 'Название события',
+    label: 'Название события:',
     hint: 'Добавьте название',
     id: 'task-name',
     type: 'text',
@@ -31,16 +32,22 @@ let TaskEditing = function(parent) {
 
   let taskDesc = new FormGroup({
     parent: div,
-    label: 'Описание',
+    label: 'Описание:',
     hint: 'Добавьте описание',
     id: 'task-desc',
     type: 'textarea',
     imp: false,
   });
 
+  let taskCategory = new CategoryGroup({
+    parent: div,
+    label: 'Категория:',
+    id: 'task-category',
+  });
+
   let taskDate = new FormGroup({
     parent: div,
-    label: 'Дата события',
+    label: 'Дата события:',
     hint: 'Введите дату',
     id: 'task-date',
     type: 'text',
@@ -65,12 +72,18 @@ let TaskEditing = function(parent) {
       taskDesc.inputValue(task.description);
       taskDate.inputValue(task.date);
       taskCheck.checkValue(task.important);
+      taskCategory.inputValue(task.category.name);
+      taskCategory.inputColor(task.category.color);
     } else {
       return {
         name: taskName.inputValue(),
         description: taskDesc.inputValue(),
         date: taskDate.inputValue(),
         important: taskCheck.checkValue(),
+        category: {
+          name: taskCategory.inputValue(),
+          color: taskCategory.inputColor(),
+        }
       };
     }
   };
