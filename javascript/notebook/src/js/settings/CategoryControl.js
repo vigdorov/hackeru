@@ -36,6 +36,14 @@ let CategoryControl = function (parent) {
 
       let deleteButton = createDOMElement('i', element, 'fas fa-times');
 
+      createDOMElement({
+        tagName: 'span',
+        parent: divShowCategory,
+        property: {
+          textContent: ' ',
+        },
+      });
+
       deleteButton.addEventListener('click', () => {
         divShowCategory.removeChild(element);
         state.temporary.nameCategory.splice(i, 1);

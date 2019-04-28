@@ -45,6 +45,12 @@ let TaskEditing = function(parent) {
     id: 'task-category',
   });
 
+  taskCategory.refresh();
+
+  this.refreshCategory = function () {
+    taskCategory.refresh();
+  };
+
   let taskDate = new FormGroup({
     parent: div,
     label: 'Дата события:',

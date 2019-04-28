@@ -288,6 +288,7 @@ let controls = function(manager) {
           settings.categoryControl.refreshButton();
           manager.setStorage();
           taskList.refreshList();
+          taskEdit.refreshCategory();
         },
         funcCancel: function() {
           state.temporary = {

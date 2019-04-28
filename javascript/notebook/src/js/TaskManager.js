@@ -4,6 +4,7 @@ const TaskEditing = require('./taskEditing/TaskEditing');
 const TaskList    = require('./taskList/TaskList');
 const Calendar    = require('./calendar/Calendar');
 const controls    = require('./controls');
+const StatusTask  = require('./statusTask/StatusTask');
 
 let TaskManager = function(parent) {
   window.state = {
@@ -55,13 +56,81 @@ let TaskManager = function(parent) {
     },
   });
 
-  let row = createDOMElement({
+  let navMenu = createDOMElement({
+    tagName: 'ul',
+    parent: body,
+    property: {
+      className: 'nav nav-tabs',
+    },
+    attributes: {
+      id: 'tabMenu',
+      role: 'tablist',
+    },
+  });
+
+  let navElementCreateTask = createDOMElement('li', navMenu, 'nav-item');
+
+  createDOMElement({
+    tagName: 'a',
+    parent: navElementCreateTask,
+    property: {
+      className: 'nav-link active',
+      textContent: 'Редактирование задач',
+    },
+    attributes: {
+      id: 'task-tab',
+      'data-toggle': 'tab',
+      'href': '#createTask',
+      'role': 'tab',
+      'aria-controls': 'tasks',
+      'aria-selected': 'true',
+    },
+  });
+
+  let navElementStatusTask = createDOMElement('li', navMenu, 'nav-item');
+
+  createDOMElement({
+    tagName: 'a',
+    parent: navElementStatusTask,
+    property: {
+      className: 'nav-link',
+      textContent: 'Работа с задачами',
+    },
+    attributes: {
+      id: 'status-tab',
+      'data-toggle': 'tab',
+      'href': '#statusTask',
+      'role': 'tab',
+      'aria-controls': 'status',
+      'aria-selected': 'false',
+    },
+  });
+
+  let tabContent = createDOMElement({
     tagName: 'div',
     parent: body,
     property: {
-      className: 'row',
+      className: 'tab-content',
+    },
+    attributes: {
+      id: 'tabContent',
     },
   });
+
+  let tab1 = createDOMElement({
+    tagName: 'div',
+    parent: tabContent,
+    property: {
+      className: 'row tab-pane fade show active',
+    },
+    attributes: {
+      id: 'createTask',
+      role: 'tabpanel',
+      'aria-labelledby': 'task-tab',
+    },
+  });
+
+  let row = createDOMElement('div', tab1, 'row');
 
   let cardOne = createDOMElement({
     tagName: 'div',
@@ -79,11 +148,25 @@ let TaskManager = function(parent) {
     },
   });
 
-  this.settings = new Settings();
-  this.popup = new ModalPopup(parent);
-  this.taskEdit = new TaskEditing(cardOne);
-  this.calendar = new Calendar(this.taskEdit.inputDate);
-  this.taskList = new TaskList(cardTwo, this);
+  let tab2 = createDOMElement({
+    tagName: 'div',
+    parent: tabContent,
+    property: {
+      className: 'tab-pane fade',
+    },
+    attributes: {
+      id: 'statusTask',
+      role: 'tabpanel',
+      'aria-labelledby': 'status-tab',
+    },
+  });
+
+  this.settings   = new Settings();
+  this.popup      = new ModalPopup(parent);
+  this.taskEdit   = new TaskEditing(cardOne);
+  this.calendar   = new Calendar(this.taskEdit.inputDate);
+  this.taskList   = new TaskList(cardTwo, this);
+  this.statusTask = new StatusTask(tab2, this);
 
 
   controls(this);

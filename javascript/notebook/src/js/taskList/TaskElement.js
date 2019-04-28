@@ -4,7 +4,7 @@ let TaskElement = function(settings, calendar) {
 
   this.index = settings.index;
   let task = state.tasksStorage[this.index];
-  let nameClassForLi = 'list-group-item-' + task.category.color;
+  let nameClassForLi = 'bd-callout bd-callout-' + task.category.color;
 
   this.li = createDOMElement({
     tagName: 'li',
