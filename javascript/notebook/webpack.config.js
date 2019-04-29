@@ -8,7 +8,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname + '/build'),
-    filename: './js/script.js',
+    filename: './js/promise.js',
   },
   devServer: {
     compress: true,
