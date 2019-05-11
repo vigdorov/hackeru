@@ -1,25 +1,20 @@
-/*
-Функция принимает:
-1. tagName    - имя тега для создания (обязательный)
-2. parent     - объект, в который нужно добавить элемент (не обязательный)
-3. property   - объект со свойствами, которые нужно добавить новому элементу
-                (не обязательный)
-4. attributes - атрибуты, которые нужно добавить к html тегу
+!(function() {
 
-Функция возвращает ссылку на вновь созданный элемент DOM
- */
-
-;(function() {
-  let createDOMElement = function(tagName, parent, className) {
-    if (!tagName) {
-      console.error('createDOMElement: tagName is empty!');
-      return null;
-    }
-
+  /**
+   * Создает DOM элемент с параметрами и аттрибутами
+   *
+   * @param {(string|object)} settings - принимает либо название тега DOM элемента,
+   * либо объект с параметрами
+   * @param {object} parent - принимает объект, к которому добавить вновь созданный
+   * эелемент
+   * @param {string} className - строка с классами DOM элемента
+   * @returns {object} Возвращает вновь созданный DOM элемент
+   */
+  let createDOMElement = function (settings = 'div', parent, className) {
     let element;
 
-    if (typeof tagName === 'string') {
-      element = document.createElement(tagName);
+    if (typeof settings === 'string') {
+      element = document.createElement(settings);
 
       if (parent) {
         parent.appendChild(element);
@@ -30,14 +25,14 @@
       }
 
     } else {
-      let setting = tagName;
-      element = document.createElement(setting.tagName);
+      let {tagName, parent, property, attributes} = settings;
+      element = document.createElement(tagName);
 
-      if (setting.parent) {
-        setting.parent.appendChild(element);
+      if (parent) {
+        parent.appendChild(element);
       }
 
-      if (setting.property) {
+      if (property) {
         let addElementProperty = function(element, property) {
           for (let key in property) {
             if (typeof property[key] === 'object') {
@@ -48,18 +43,17 @@
           }
         };
 
-        addElementProperty(element, setting.property);
+        addElementProperty(element, property);
       }
 
-      if (setting.attributes) {
-        for (let attr in setting.attributes) {
-          if (setting.attributes.hasOwnProperty(attr)) {
-            element.setAttribute(attr, setting.attributes[attr]);
+      if (attributes) {
+        for (let attr in attributes) {
+          if (attributes.hasOwnProperty(attr)) {
+            element.setAttribute(attr, attributes[attr]);
           }
         }
       }
     }
-
     return element;
   };
 

@@ -1,4 +1,4 @@
-;(function() {
+!(function() {
   let createDOMElement = function(tagName, attributes, ...textContent) {
     let element = document.createElement(tagName);
     if (attributes) {

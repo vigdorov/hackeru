@@ -10,7 +10,7 @@ let proxy = new Proxy( user, {
     return true;
   }
 });
-
+// TODO FIXME: пример коммента с проблемой
 proxy.firstName = 'Иван';
 proxy.firstName;
 
