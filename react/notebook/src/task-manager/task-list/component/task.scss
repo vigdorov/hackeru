@@ -1,0 +1,31 @@
+.task__header {
+  position: relative;
+
+  &-urgent {
+    position: absolute;
+    left: -15px;
+    color: #ffc107;
+  }
+
+  &-name {
+    margin-left: 10px;
+  }
+}
+
+.task__button-edit {
+  color: #4A4A4A;
+  padding: 0;
+}
+
+.task__button-edit:hover {
+  color: #ffc107;
+}
+
+.task__button-delete {
+  color: #4A4A4A;
+  padding: 0;
+}
+
+.task__button-delete:hover {
+  color: #dc3545;
+}
