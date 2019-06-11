@@ -21,44 +21,41 @@ interface Props {
   onChange: (event: any) => string;
   onAddTask: () => void;
   onClearForm: () => void;
+  status: 'add' | 'edit'
 }
 
-interface State {
-  header: string;
-  addButton: string;
-  cancelButton: string;
-}
-
-export default class CreateTask extends Component<Props, State> {
-  constructor (props: Props) {
-    super(props);
-
-    this.state = {
-      header: 'Добавить событие',
-      addButton: 'Добавить',
-      cancelButton: 'Очистить'
-    }
-  }
-
+export default class CreateTask extends Component<Props, {}> {
   render () {
+    let { status, form, onChange, onAddTask, onClearForm } = this.props;
+
+    let header = 'Добавить событие',
+        addButton = 'Добавить',
+        cancelButton = 'Очистить';
+
+    if (status === 'edit') {
+      header = 'Редактировать событие';
+      addButton = 'Изменить';
+      cancelButton = 'Отмена';
+    }
+
     return (
       <Card>
         <Card.Body>
-          <Card.Title>{this.state.header}</Card.Title>
+          <Card.Title>{header}</Card.Title>
 
           <InputGroup type="text"
                       label="Название события:"
-                      value={this.props.form.name}
+                      value={form.name}
                       placeholder="Добавьте название"
                       id="name"
                       required={true}
-                      onChange={this.props.onChange}
+                      onChange={onChange}
           />
 
           <TextareaGroup label="Описание:"
-                         value={this.props.form.description}
+                         value={form.description}
                          id="description"
-                         onChange={this.props.onChange}
+                         onChange={onChange}
                          placeholder="Добавьте описание"
                          rows={3}
                          cols={5}
@@ -66,42 +63,42 @@ export default class CreateTask extends Component<Props, State> {
 
           <SelectGroup label='Статус события:'
                        value={STORE.statusNames.slice()}
-                       choice={this.props.form.status}
+                       choice={form.status}
                        id='status'
-                       onChange={this.props.onChange}
+                       onChange={onChange}
           />
 
           <InputGroup type="text"
                       label="Дата события:"
-                      value={this.props.form.date}
+                      value={form.date}
                       placeholder="Введите дату"
                       id="date"
                       required={true}
-                      onChange={this.props.onChange}
+                      onChange={onChange}
           />
 
           <CheckboxGroup label="Важное событие"
-                         value={this.props.form.urgent}
+                         value={form.urgent}
                          id="urgent"
-                         onChange={this.props.onChange}
+                         onChange={onChange}
           />
 
           <Row>
             <Col>
-              <Button variant="info"
-                      onClick={this.props.onAddTask}
+              <Button variant={ status === 'add' ? 'info' : 'warning'}
+                      onClick={onAddTask}
                       className="btn-block"
                       style={{ marginBottom: '10px' }}
               >
-                {this.state.addButton}
+                {addButton}
               </Button>
             </Col>
             <Col>
               <Button variant="secondary"
-                      onClick={this.props.onClearForm}
+                      onClick={onClearForm}
                       className="btn-block"
               >
-                {this.state.cancelButton}
+                {cancelButton}
               </Button>
             </Col>
           </Row>

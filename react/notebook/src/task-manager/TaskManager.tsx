@@ -7,10 +7,16 @@ import TasksList from './task-list/TasksList';
 import { Form } from './create-task/CreateTask';
 
 import ModalDialog from '../modals/ModalDialog';
+import LocalStorage from './local-storage/LocalStorage';
 
 interface State {
-  data: Form[];
+  idCounter: number;
+  data: {
+    [id: number]: Form
+  };
   form: Form;
+  formStatus: 'add' | 'edit';
+  formEditId: number;
 }
 
 export const STORE = {
@@ -36,46 +42,90 @@ export default class TaskManager extends Component<{}, State> {
     };
 
     this.state = {
-      data: [],
+      idCounter: 0,
+      data: {},
       form: {
         ...this.clearForm
-      }
+      },
+      formStatus: 'add',
+      formEditId: -1
     }
   }
 
   handleGetStorage = () => {
-    let localData = localStorage.getItem('notes') || '[]';
-    let parseData = JSON.parse(localData);
+    let localData = LocalStorage.getItem('notes', true) || [],
+        localIdCounter = Number(LocalStorage.getItem('idCounter')) || 0;
+
     this.setState({
-      data: parseData
+      data: localData,
+      idCounter: localIdCounter
     });
   };
 
   handleSetStorage = () => {
-    let notes = JSON.stringify(this.state.data);
-    localStorage.setItem('notes', notes);
+    LocalStorage.setItem('notes', this.state.data, true);
+    LocalStorage.setItem('idCounter', this.state.idCounter);
+  };
+
+  handleAddFakeDate = () => {
+    let task = {
+      name: 'Задача',
+      description: 'Описание',
+      date: '12.03.12',
+      status: STORE.statusNames[0],
+      urgent: false
+    };
+    let id = this.state.idCounter,
+        fakeData: any = {};
+    for (let i = 0; i < 5; i++) {
+      fakeData[id++] = task;
+    }
+    this.setState({
+      data: fakeData,
+      idCounter: id
+    }, this.handleSetStorage);
   };
 
   handleClearForm = () => {
     this.setState({
-      form: { ...this.clearForm }
+      form: { ...this.clearForm },
+      formStatus: 'add',
+      formEditId: -1
     }, this.handleSetStorage);
   };
 
-  handleAddTask = () => {
-    let prevData = this.state.data.slice();
-    prevData.push( {...this.state.form} );
+  handleClearTasksList = () => {
+    ModalDialog.danger('Все записи будут удалены!', answer => {
+      if (answer) {
+        LocalStorage.removeItem('notes');
+        LocalStorage.removeItem('idCounter');
+        this.handleGetStorage();
+      }
+    });
+  };
 
+  handleAddTask = () => {
+    let { data, formEditId: idEdit, idCounter: id }= this.state;
+
+    if (idEdit > -1) id = idEdit;
+
+    data[id] = { ...this.state.form };
     this.setState({
-      data: prevData,
-    }, this.handleClearForm);
+      data: { ...data },
+      idCounter: id + 1,
+      formEditId: -1
+    }, this.handleSetStorage);
+
+    this.handleClearForm();
   };
 
   handleEditTask = (id: number) => {
+    let task = this.state.data[id];
+
     this.setState({
-      form: {
-        ...this.state.data[id]
-      }
+      form: { ...task },
+      formEditId: id,
+      formStatus: 'edit'
     });
   };
 
@@ -83,12 +133,10 @@ export default class TaskManager extends Component<{}, State> {
     let message = 'Вы действительно хотите удалить событие?';
     ModalDialog.danger(message, (answer: boolean) => {
       if (answer) {
-        this.setState(prevState => {
-          let newData = prevState.data.slice();
-          newData.splice(id, 1);
-          return {
-            data: newData
-          };
+        let data = this.state.data;
+        delete data[id];
+        this.setState({
+          data: { ...data }
         }, this.handleSetStorage);
       }
     });
@@ -126,12 +174,15 @@ export default class TaskManager extends Component<{}, State> {
                         onChange={this.handleChange}
                         onAddTask={this.handleAddTask}
                         onClearForm={this.handleClearForm}
+                        status={this.state.formStatus}
             />
           </Col>
           <Col xs={12} md={6} xl={8}>
             <TasksList data={this.state.data}
                        onEdit={this.handleEditTask}
                        onDelete={this.handleDeleteTask}
+                       onClear={this.handleClearTasksList}
+                       onFake={this.handleAddFakeDate}
             />
           </Col>
         </Row>
