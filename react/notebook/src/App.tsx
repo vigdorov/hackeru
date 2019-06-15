@@ -9,13 +9,32 @@ import logo from './img/logo.png';
 
 import TaskManager from './task-manager/TaskManager';
 import DragAndDrop from './drag-and-drop/DragAndDrop';
+import LocalStorage from "./task-manager/local-storage/LocalStorage";
+import * as appActions from "./store/action_creators";
+import { connect } from "react-redux";
 
-export default class App extends Component<Props, State> {
+interface State {
+  activeLink: string
+}
+
+interface Props {
+  updateTask: (payload: any) => any;
+}
+
+class App extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       activeLink: '/'
     };
+  }
+
+  componentDidMount(): void {
+    let data = LocalStorage.getItem('notes', true) || [],
+        idCounter = Number(LocalStorage.getItem('idCounter')) || 0,
+        { updateTask } = this.props;
+
+    updateTask({data, idCounter});
   }
 
   handleClickNavLink = (event: any) => {
@@ -65,12 +84,10 @@ export default class App extends Component<Props, State> {
   }
 }
 
-interface State {
-  activeLink: string
-}
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    updateTask: (payload: any) => dispatch(appActions.updateTask(payload)),
+  };
+};
 
-interface Props {
-
-}
-
-
+export default connect(null, mapDispatchToProps)(App);
